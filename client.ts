@@ -1,6 +1,6 @@
 import type { Item } from "./types";
 
-export class HNClient {
+export class HackerNewsClient {
   _c: Cache<Item>;
   url = "https://hacker-news.firebaseio.com/v0/";
 
@@ -27,7 +27,7 @@ export class HNClient {
     return Promise.all(ids.map(this.getItemById.bind(this)));
   }
 
-  getUserByName(username: string) {
+  async getUserByName(username: string) {
     return fetch(`${this.url}/users/${username}.json`)
       .then((r) => r.json() as unknown as Item)
       .then((j) => {
@@ -38,8 +38,32 @@ export class HNClient {
       });
   }
 
-  getTopStories() {
-    return fetch(`${this.url}/topstories.json`).then(
+  async getTopStories() {
+    return this._getLiveIDs("topstories");
+  }
+  async getNewStories() {
+    return this._getLiveIDs("newstories");
+  }
+  async getBestStories() {
+    return this._getLiveIDs("beststories");
+  }
+  async getAskStories() {
+    return this._getLiveIDs("asktories");
+  }
+  async getShowStories() {
+    return this._getLiveIDs("showstories");
+  }
+
+  async getJobStories() {
+    return this._getLiveIDs("jobstories");
+  }
+
+  async getMaxItem() {
+    return this._getLiveIDs("asktories");
+  }
+
+  _getLiveIDs(page: string) {
+    return fetch(`${this.url}/${page}.json`).then(
       (r) => r.json() as unknown as number[]
     );
   }

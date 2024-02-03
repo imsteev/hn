@@ -3,7 +3,7 @@ export type Item = {
   deleted: boolean;
   type: "job" | "story" | "comment" | "poll" | "pollopt";
   by: string;
-  time: string; // created at, unix time
+  time: number; // created at, unix time
   dead: boolean;
   parent: string; // either another comment or relevant story
   poll: string; // poll option's associated poll

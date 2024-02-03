@@ -49,10 +49,6 @@ By: ${this.item.by}`;
 }
 
 export class PollOpt extends Browser {
-  constructor(item: Item) {
-    super(item);
-  }
-
   display() {
     return `poll opt: ${this.item.text}`;
   }
