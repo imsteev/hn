@@ -11,7 +11,7 @@ class ItemBrowser {
   }
 
   display() {
-    return `Title: ${this.item.title}
+    return `${this.item.title}
 ${this.item.url}
 By: ${this.item.by}`;
   }
@@ -37,13 +37,15 @@ async function main() {
   const top = await cli.getTopStories();
   const numIDs = top.length;
   const chunkSize = 50; // to fetch in parallel
+  let itemNum = 1;
   for (let i = 0; i < numIDs; i += chunkSize) {
     const end = Math.min(i + chunkSize, numIDs - 1);
     const items = await cli.getItemsByIDs(top.slice(i, end));
     for (const item of items) {
       const bro = new ItemBrowser(item);
-      console.log(bro.display());
+      console.log(itemNum + ": " + bro.display());
       console.log();
+      itemNum++;
     }
   }
 }
