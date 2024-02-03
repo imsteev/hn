@@ -1,7 +1,6 @@
 import { HackerNewsClient } from "../client";
 import createBrowser from "./factory";
 
-const TOP_N_TO_LOOK_AT = 15;
 const CHUNK_SIZE = 5;
 
 // const storyTypes = ["new", "top", "best", "ask", "show", "job"];
@@ -25,11 +24,11 @@ function chooseRootBrowsers(cli: HackerNewsClient, storyType: string) {
   return [];
 }
 
-export async function* root(storyType: string) {
+export async function* root(storyType: string, maxItems = 200, chunkSize = 10) {
   const cli = new HackerNewsClient();
   const rootIDs = await chooseRootBrowsers(cli, storyType);
-  for (let i = 0; i < TOP_N_TO_LOOK_AT; i += CHUNK_SIZE) {
-    const end = Math.min(i + CHUNK_SIZE, TOP_N_TO_LOOK_AT - 1);
+  for (let i = 0; i < maxItems; i += chunkSize) {
+    const end = Math.min(i + chunkSize, maxItems - 1);
     yield cli
       .getItemsByIDs(rootIDs.slice(i, end))
       .then((items) => items.map(createBrowser));
