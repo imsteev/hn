@@ -1,4 +1,4 @@
-# bunhn
+# hn
 
 To install dependencies:
 

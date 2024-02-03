@@ -1,5 +1,5 @@
 {
-  "name": "bunhn",
+  "name": "hn",
   "module": "index.ts",
   "type": "module",
   "devDependencies": {
