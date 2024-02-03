@@ -10,6 +10,12 @@ class ItemBrowser {
     this.cli = new HNClient();
   }
 
+  display() {
+    return `Title: ${this.item.title}
+${this.item.url}
+By: ${this.item.by}`;
+  }
+
   *visitKids() {
     for (const kid of this.item.kids) {
       yield this.cli.getItemById(kid);
@@ -28,19 +34,18 @@ class ItemBrowser {
 async function main() {
   const cli = new HNClient();
 
-  // get top stories
-  cli.getTopStories().then(async (ids) => {
-    const numIDs = 10;
-    const chunkSize = 50; // to fetch in parallel
-    for (let i = 0; i < numIDs; i += chunkSize) {
-      const chunkIDs = ids.slice(i, Math.min(i + chunkSize, numIDs - 1));
-      const items = await Promise.all(chunkIDs.map(cli.getItemById.bind(cli))); // GOTCHA: cannot pass simply `cli.getItemById`. if you do so, the function has no `this` context
-      for (const item of items) {
-        const bro = new ItemBrowser(item);
-        console.log(await (await bro.visitUrl()).text());
-      }
+  const top = await cli.getTopStories();
+  const numIDs = top.length;
+  const chunkSize = 50; // to fetch in parallel
+  for (let i = 0; i < numIDs; i += chunkSize) {
+    const end = Math.min(i + chunkSize, numIDs - 1);
+    const items = await cli.getItemsByIDs(top.slice(i, end));
+    for (const item of items) {
+      const bro = new ItemBrowser(item);
+      console.log(bro.display());
+      console.log();
     }
-  });
+  }
 }
 
 await main();
