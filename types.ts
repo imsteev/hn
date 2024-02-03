@@ -11,6 +11,7 @@ export type Item = {
   url: string;
   score: number; // store score or votes
   title: string;
+  text: string;
   parts: number[]; // list of pollopts
   descendants: number; // total comment count
 };

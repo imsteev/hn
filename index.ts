@@ -1,51 +1,26 @@
+import { Browser } from "./browser/base";
+import createBrowser from "./browser/factory";
 import { HNClient } from "./client";
-import type { Item } from "./types";
 
-class ItemBrowser {
-  item: Item;
-  cli: HNClient;
-
-  constructor(item: Item) {
-    this.item = item;
-    this.cli = new HNClient();
-  }
-
-  display() {
-    return `${this.item.title}
-${this.item.url}
-By: ${this.item.by}`;
-  }
-
-  *visitKids() {
-    for (const kid of this.item.kids) {
-      yield this.cli.getItemById(kid);
-    }
-  }
-
-  visitUser() {
-    return this.cli.getUserByName(this.item.by);
-  }
-
-  visitUrl() {
-    return fetch(this.item.url);
-  }
-}
+const TOP_N_TO_LOOK_AT = 15;
+const CHUNK_SIZE = 5;
 
 async function main() {
   const cli = new HNClient();
 
   const top = await cli.getTopStories();
-  const numIDs = top.length;
-  const chunkSize = 50; // to fetch in parallel
-  let itemNum = 1;
-  for (let i = 0; i < numIDs; i += chunkSize) {
-    const end = Math.min(i + chunkSize, numIDs - 1);
+  for (let i = 0; i < TOP_N_TO_LOOK_AT; i += CHUNK_SIZE) {
+    const end = Math.min(i + CHUNK_SIZE, TOP_N_TO_LOOK_AT - 1);
     const items = await cli.getItemsByIDs(top.slice(i, end));
     for (const item of items) {
-      const bro = new ItemBrowser(item);
-      console.log(itemNum + ": " + bro.display());
+      const bro = createBrowser(item);
+      console.log(bro.display());
+      for await (const kid of bro.visitKids()) {
+        console.log();
+        console.log(kid.display());
+        console.log();
+      }
       console.log();
-      itemNum++;
     }
   }
 }
