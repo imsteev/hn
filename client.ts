@@ -2,7 +2,7 @@ import type { Item } from "./types";
 
 export class HackerNewsClient {
   _c: Cache<Item>;
-  url = "https://hacker-news.firebaseio.com/v0/";
+  url = "https://hacker-news.firebaseio.com/v0";
 
   constructor() {
     this._c = new Cache<Item>();
@@ -48,24 +48,26 @@ export class HackerNewsClient {
     return this._getLiveIDs("beststories");
   }
   async getAskStories() {
-    return this._getLiveIDs("asktories");
+    return this._getLiveIDs("askstories");
   }
   async getShowStories() {
     return this._getLiveIDs("showstories");
   }
-
   async getJobStories() {
     return this._getLiveIDs("jobstories");
   }
 
-  async getMaxItem() {
-    return this._getLiveIDs("asktories");
-  }
-
   _getLiveIDs(page: string) {
-    return fetch(`${this.url}/${page}.json`).then(
-      (r) => r.json() as unknown as number[]
-    );
+    return fetch(`${this.url}/${page}.json`)
+      .then((r) => {
+        console.log(r.headers, r.url);
+        return r.json() as unknown as number[];
+      })
+      .then((j) => {
+        console.log(j);
+        return j;
+      });
+    // todo: error handling
   }
 }
 
