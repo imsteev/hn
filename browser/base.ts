@@ -12,12 +12,27 @@ export class Browser {
   }
 
   display() {
-    return `${this.item.type}`;
+    return (
+      this.getParts()
+        // @ts-ignore
+        .map((p) => this.item[p])
+        .filter((v) => !!v)
+        .join("\n")
+    );
+  }
+
+  // descendants should override this to determine which
+  // parts are the "important" parts worth displaying.
+  getParts() {
+    return ["type"];
   }
 
   created() {
     if (this.item.time) {
-      return new Date(this.item.time * 1000).toDateString();
+      const date = new Date(this.item.time * 1000);
+      return new Intl.DateTimeFormat("en-US", {
+        dateStyle: "short",
+      }).format(date);
     }
     return "";
   }

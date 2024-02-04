@@ -63,7 +63,6 @@ export class HackerNewsClient {
         return r.json() as unknown as number[];
       })
       .then((j) => {
-        console.log(j);
         return j;
       });
     // todo: error handling

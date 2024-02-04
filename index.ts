@@ -32,14 +32,20 @@ async function main() {
     process.exit(1);
   }
 
-  const iterator = generateBrowsers(storyType, 500, 2);
+  console.log("--- press enter to start ---");
+  await readInput();
+
+  let counter = 0;
+  const iterator = generateBrowsers(storyType, 500, 10);
   for await (const browsers of iterator) {
     browsers.forEach((bro) => {
       console.log(bro.display());
       console.log(bro.created());
       console.log();
     });
-    console.log("--- press enter to continue---");
+    // display # of item seen for the last item (current end of list)
+    counter += browsers.length;
+    console.log(`[${storyType}:${counter}]`);
     const input = await readInput();
   }
 }
