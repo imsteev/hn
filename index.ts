@@ -28,6 +28,7 @@ async function main() {
     const liveCmd = live.find((w) => !!cmd && w.startsWith(cmd));
     if (cmd === "h") {
       renderHelp();
+      continue;
     } else if (liveCmd) {
       const newStoryType = liveCmd;
       if (newStoryType !== storyType) {
