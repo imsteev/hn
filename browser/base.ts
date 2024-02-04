@@ -19,5 +19,6 @@ export class Browser {
     if (this.item.time) {
       return new Date(this.item.time * 1000).toDateString();
     }
+    return "";
   }
 }

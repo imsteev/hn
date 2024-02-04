@@ -7,9 +7,8 @@ export class Story extends Browser {
   }
 
   display() {
-    return `${this.item.title}
-${this.item.url}
-By: ${this.item.by}`;
+    const parts = [this.item.title, this.item.url, this.item.kids.toString()];
+    return parts.filter((p) => !!p).join("\n");
   }
 }
 
@@ -19,9 +18,8 @@ export class Job extends Browser {
   }
 
   display() {
-    return `${this.item.title}
-${this.item.text}
-By: ${this.item.by}`;
+    const parts = [this.item.title, this.item.url];
+    return parts.filter((p) => !!p).join("\n");
   }
 }
 
@@ -31,8 +29,8 @@ export class Comment extends Browser {
   }
 
   display() {
-    return `comment: ${this.item.text}
-By: ${this.item.by}`;
+    const parts = [this.item.text, this.item.by];
+    return parts.filter((p) => !!p).join("\n");
   }
 }
 
@@ -41,9 +39,8 @@ export class Poll extends Browser {
     super(item);
   }
   display() {
-    return `poll: ${this.item.title}
-${this.item.url}
-By: ${this.item.by}`;
+    const parts = [this.item.title, this.item.url];
+    return parts.filter((p) => !!p).join("\n");
   }
 }
 
@@ -52,6 +49,6 @@ export class PollOpt extends Browser {
     super(item);
   }
   display() {
-    return `poll opt: ${this.item.text}`;
+    return `${this.item.text}`;
   }
 }

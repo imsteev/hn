@@ -60,7 +60,6 @@ export class HackerNewsClient {
   _getLiveIDs(page: string) {
     return fetch(`${this.url}/${page}.json`)
       .then((r) => {
-        console.log(r.headers, r.url);
         return r.json() as unknown as number[];
       })
       .then((j) => {

@@ -24,13 +24,16 @@ function chooseRootBrowsers(cli: HackerNewsClient, storyType: string) {
   return [];
 }
 
-export async function* root(storyType: string, maxItems = 200, chunkSize = 10) {
+export async function* generateBrowsers(
+  storyType: string,
+  maxItems = 500,
+  chunkSize = 1
+) {
   const cli = new HackerNewsClient();
   const rootIDs = await chooseRootBrowsers(cli, storyType);
   for (let i = 0; i < maxItems; i += chunkSize) {
-    const end = Math.min(i + chunkSize, maxItems - 1);
-    yield cli
-      .getItemsByIDs(rootIDs.slice(i, end))
-      .then((items) => items.map(createBrowser));
+    const j = Math.min(i + chunkSize, maxItems - 1);
+    const items = await cli.getItemsByIDs(rootIDs.slice(i, j));
+    yield items.map(createBrowser);
   }
 }
