@@ -2,6 +2,7 @@ import { parseArgs } from "util";
 import { generateBrowsers } from "./browser/root";
 import { HackerNewsClient } from "./client";
 import createBrowser from "./browser/factory";
+import type { Browser } from "./browser/base";
 
 const opts = {
   verbose: { type: "boolean", short: "v" },
@@ -17,25 +18,19 @@ async function main() {
     args: Bun.argv,
   });
 
-  console.log(`--- press enter to start, or ---`);
-  console.log(`--- ${live} ---`);
-  let cmd = await readInput();
-
   const cli = new HackerNewsClient();
   let rootIterator;
   let storyType;
-
-  console.log(cmd);
   let counter = 0;
-  while (true) {
+
+  renderHelp();
+  for await (const cmd of console) {
+    const liveCmd = live.find((w) => !!cmd && w.startsWith(cmd));
     if (cmd === "h") {
-      console.log(`--- press enter to start, or ---`);
-      console.log(`--- ${live} ---`);
-      cmd = await readInput();
-    } else if (cmd && live.find((w) => w.startsWith(cmd))) {
-      const newStoryType = live.find((w) => w.startsWith(cmd)) || "top";
+      renderHelp();
+    } else if (liveCmd) {
+      const newStoryType = liveCmd;
       if (newStoryType !== storyType) {
-        console.log({ newStoryType });
         rootIterator = generateBrowsers(newStoryType, 500, 2);
         counter = 0;
       }
@@ -46,24 +41,15 @@ async function main() {
       const item = await cli.getItemById(itemId);
       if (item) {
         const bro = createBrowser(item);
-        console.log(bro.display());
-        if (parsed.values.verbose) {
-          console.log("id: " + bro.item.id);
-          console.log("parent: " + (bro.item.parent || ""));
-          console.log("kids: " + (bro.item.kids || ""));
-          console.log("date: " + bro.created());
-          console.log("type: " + bro.item.type);
-        }
+        renderBrowser(bro, !!parsed.values.verbose);
       }
       if (item?.kids && displayKids) {
         const kids = await cli.getItemsByIDs(item.kids);
-        console.log();
         kids.map(createBrowser).forEach((bro) => {
           console.log("\t" + bro.display());
           console.log("\t" + "---");
         });
       }
-      cmd = await readInput();
       // TODO: explore kids
       continue;
     }
@@ -77,20 +63,31 @@ async function main() {
       }
       const browsers = rootCursor.value;
       browsers.forEach((bro) => {
-        if (parsed.values.verbose) {
-          console.log("id: " + bro.item.id);
-          console.log("kids: " + bro.item.kids);
-        }
-        console.log(bro.display());
-        console.log(bro.created());
-        console.log();
+        renderBrowser(bro, !!parsed.values.verbose);
       });
       // display # of item seen for the last item (current end of list)
       counter += browsers.length;
       console.log(`[${storyType}:${counter}]`);
-      cmd = await readInput();
     }
   }
+}
+
+function renderHelp() {
+  console.log(`--- press enter to start, or ---`);
+  console.log(`--- ${live} ---`);
+}
+
+function renderBrowser(bro: Browser, verbose = false) {
+  if (verbose) {
+    console.log("id: " + bro.item.id);
+    console.log("parent: " + (bro.item.parent || ""));
+    console.log("kids: " + (bro.item.kids || ""));
+    console.log("date: " + bro.created());
+    console.log("type: " + bro.item.type);
+  }
+  console.log(bro.display());
+  console.log(bro.created());
+  console.log();
 }
 
 async function readInput() {
