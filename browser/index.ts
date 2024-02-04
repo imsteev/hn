@@ -25,7 +25,7 @@ export class Comment extends Browser {
   }
 
   display() {
-    return `${this.item.by}: ${super.display()}`;
+    return `${super.display()} - [${this.item.by}]`;
   }
 
   getParts() {
