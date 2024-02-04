@@ -23,8 +23,13 @@ export class Comment extends Browser {
   constructor(item: Item) {
     super(item);
   }
+
+  display() {
+    return `${this.item.by}: ${super.display()}`;
+  }
+
   getParts() {
-    return ["text", "by"];
+    return ["text"];
   }
 }
 

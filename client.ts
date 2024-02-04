@@ -16,7 +16,7 @@ export class HackerNewsClient {
     return fetch(`${this.url}/item/${id}.json`)
       .then((r) => r.json() as unknown as Item)
       .then((j) => {
-        if (j.id) {
+        if (!!j?.id) {
           this._c.set(j.id, j);
         }
         return j;
